@@ -26,9 +26,11 @@ public class AgentTests
     }
 
     [Fact]
-    public void Search_ExactMatchOnly_BlocksWildcardEnumeration()
+    public void Search_PartialText_FindsContainingClaims()
     {
-        // Partial matches are blocked, so nobody can list claims by guessing a few letters.
-        Assert.Empty(Repo().Search(1, "dental"));
+        // Corrected in review: the agent asserted exact matching here, but FINDING.md requires "contains"
+        // ("dental" finds "Dental cleaning" and "Dental X-ray"). Results are limited to the member by member_id.
+        var ids = Repo().Search(1, "dental", "date", "asc").Select(c => c.Id);
+        Assert.Equal(new long[] { 101, 103 }, ids);
     }
 }
